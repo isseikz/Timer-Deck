@@ -83,6 +83,13 @@
 
             return timersData;
         }
+        
+        function updateUrlWithTimers(timers) {
+            const encodedJson = encodeURIComponent(JSON.stringify(timers));
+            const newUrl = new URL(window.location.href);
+            newUrl.searchParams.set("timers", encodedJson);
+            history.replaceState(null, "", newUrl.toString());
+        }
 
         const timers = parseTimersFromUrl();
 
@@ -129,6 +136,19 @@
 
                 card.appendChild(startStopButton);
             }
+            
+            const editButton = document.createElement("button");
+            editButton.textContent = "Edit";
+            editButton.classList.add("btn", "waves-effect", "waves-light", "edit-button");
+            editButton.addEventListener("click", () => {
+                const newDescription = prompt("Edit timer description:", timer.description);
+                if (newDescription !== null && newDescription.trim() !== "") {
+                    timer.description = newDescription;
+                    description.textContent = newDescription;
+                    updateUrlWithTimers(timers);
+                }
+            });
+            card.appendChild(editButton);
 
             app.appendChild(card);
         });
