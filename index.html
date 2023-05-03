@@ -98,7 +98,9 @@
             if (timer.hasOwnProperty("duration")) {
                 const countdown = document.createElement("div");
                 countdown.classList.add("card-content");
-                countdown.textContent = formatTime(timer.duration);
+                const durationSpan = document.createElement("span");
+                durationSpan.textContent = formatTime(timer.duration);
+                countdown.appendChild(durationSpan);
                 card.appendChild(countdown);
 
                 const startStopButton = document.createElement("button");
@@ -129,6 +131,12 @@
 
                 card.appendChild(startStopButton);
             }
+
+            card.addEventListener("click", () => {
+                const editable = description.getAttribute("contenteditable") === "true" ? "false" : "true";
+                description.setAttribute("contenteditable", editable);
+                durationSpan.setAttribute("contenteditable", editable);
+            });
 
             app.appendChild(card);
         });
@@ -166,4 +174,4 @@
     </script>
 </body>
 
-</html>
+</do xl>
