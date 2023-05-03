@@ -101,9 +101,11 @@
             description.classList.add("description", "card-title");
             description.textContent = timer.description;
             card.appendChild(description);
+            
+            let countdown;
 
             if (timer.hasOwnProperty("duration")) {
-                const countdown = document.createElement("div");
+                countdown = document.createElement("div");
                 countdown.classList.add("card-content");
                 countdown.textContent = formatTime(timer.duration);
                 card.appendChild(countdown);
