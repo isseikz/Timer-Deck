@@ -145,8 +145,17 @@
                 if (newDescription !== null && newDescription.trim() !== "") {
                     timer.description = newDescription;
                     description.textContent = newDescription;
-                    updateUrlWithTimers(timers);
                 }
+
+                if (timer.hasOwnProperty("duration")) {
+                    const newDuration = prompt("Edit timer duration (in seconds):", timer.duration);
+                    if (newDuration !== null && !isNaN(parseInt(newDuration, 10))) {
+                        timer.duration = parseInt(newDuration, 10);
+                        countdown.textContent = formatTime(timer.duration);
+                    }
+                }
+
+                updateUrlWithTimers(timers);
             });
             card.appendChild(editButton);
 
