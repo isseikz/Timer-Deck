@@ -375,7 +375,7 @@
             oscillator.connect(gainNode);
             gainNode.connect(context.destination);
 
-            gainNode.gain.value = 0.5;
+            gainNode.gain.value = 1.0;
             oscillator.frequency.value = 440;
             oscillator.type = "sine";
 
