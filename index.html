@@ -34,7 +34,6 @@
         }
 
         .cards {
-            flex-grow: 1;
             display: flex;
             flex-direction: column;
             justify-content: flex-start;
@@ -82,24 +81,39 @@
         cards.classList.add("cards");
         app.appendChild(cards);
 
+        function setTitle(title) {
+            document.title = title;
+            const titleElement = document.createElement("h1");
+            titleElement.textContent = title;
+            titleElement.style.marginBottom = "20px";
+            app.appendChild(titleElement);
+        }
+
+
         function parseTimersFromUrl() {
             const searchParams = new URLSearchParams(window.location.search);
-            const timersData = [];
+            const timersData = {
+                timers: [],
+                title: "Timer"
+            };
 
             if (searchParams.has("timers")) {
                 try {
                     const decodedJson = decodeURIComponent(searchParams.get("timers"));
                     const parsedData = JSON.parse(decodedJson);
-                    if (Array.isArray(parsedData)) {
-                        parsedData.forEach((timer) => {
+                    if (parsedData.hasOwnProperty("timers") && Array.isArray(parsedData.timers)) {
+                        parsedData.timers.forEach((timer) => {
                             if (timer.hasOwnProperty("description")) {
                                 const newTimer = { description: timer.description };
                                 if (timer.hasOwnProperty("duration")) {
                                     newTimer.duration = parseInt(timer.duration, 10);
                                 }
-                                timersData.push(newTimer);
+                                timersData.timers.push(newTimer);
                             }
                         });
+                    }
+                    if (parsedData.hasOwnProperty("title")) {
+                        timersData.title = parsedData.title;
                     }
                 } catch (error) {
                     console.error("Error parsing timers from URL:", error);
@@ -109,12 +123,14 @@
             return timersData;
         }
 
+
         function updateUrlWithTimers(timers) {
             const encodedJson = encodeURIComponent(JSON.stringify(timers));
             const newUrl = new URL(window.location.href);
             newUrl.searchParams.set("timers", encodedJson);
             history.replaceState(null, "", newUrl.toString());
         }
+
 
         function createCard(timer) {
             const card = document.createElement("div");
@@ -184,18 +200,14 @@
             });
             card.appendChild(editButton);
 
-            const deleteButton = document.createElement("button");
-            deleteButton.textContent = "Delete";
-            deleteButton.classList.add("btn", "waves-effect", "waves-light", "delete-button");
-            deleteButton.innerHTML = '<i class="material-icons">delete</i>';
-            deleteButton.addEventListener("click", () => {
-                cards.removeChild(card);
-                timers.splice(timers.indexOf(timer), 1);
-                updateUrlWithTimers(timers);
-            });
-            card.appendChild(deleteButton);
+            createDeleteButton(card, timer);
 
             cards.appendChild(card);
+        }
+
+        function setCards(timers) {
+            timers.forEach(createCard);
+            app.appendChild(cards);
         }
 
         function createAddButton() {
@@ -207,11 +219,24 @@
                     description: "New Timer",
                     duration: 60
                 };
-                timers.push(newTimer);
+                timers.timers.push(newTimer);
                 createCard(newTimer);
                 updateUrlWithTimers(timers);
             });
             app.appendChild(addButton);
+        }
+
+        function createDeleteButton(card, timer) {
+            const deleteButton = document.createElement("button");
+            deleteButton.textContent = "Delete";
+            deleteButton.classList.add("btn", "waves-effect", "waves-light", "delete-button");
+            deleteButton.innerHTML = '<i class="material-icons">delete</i>';
+            deleteButton.addEventListener("click", () => {
+                cards.removeChild(card);
+                timers.timers.splice(timers.timers.indexOf(timer), 1);
+                updateUrlWithTimers(timers);
+            });
+            card.appendChild(deleteButton);
         }
 
         function createScoringSection() {
@@ -242,7 +267,8 @@
 
         const timers = parseTimersFromUrl();
 
-        timers.forEach(createCard);
+        setTitle(timers.title);
+        setCards(timers.timers);
         createAddButton();
         createScoringSection()
 
