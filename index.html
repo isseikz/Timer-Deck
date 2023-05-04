@@ -181,12 +181,20 @@
                 startStopButton.textContent = "Start";
                 startStopButton.classList.add("btn", "waves-effect", "waves-light");
                 let intervalId = null;
+                let alarmIntervalId = null;
                 let timerRunning = false;
 
                 startStopButton.addEventListener("click", () => {
                     if (timerRunning) {
                         clearInterval(intervalId);
-                        startStopButton.textContent = "Start";
+                        clearInterval(alarmIntervalId);
+
+                        if (timer.duration <= 0) {
+                            startStopButton.textContent = "Finished";
+                            startStopButton.disabled = true;
+                        } else {
+                            startStopButton.textContent = "Start";
+                        }
                     } else {
                         intervalId = setInterval(() => {
                             timer.duration--;
@@ -195,7 +203,7 @@
                             if (timer.duration <= 0) {
                                 clearInterval(intervalId);
                                 countdown.textContent = "Time's up!";
-                                startStopButton.disabled = true;
+                                alarmIntervalId = setInterval(playAlarmSound, 1000);
                             }
                         }, 1000);
                         startStopButton.textContent = "Stop";
@@ -296,6 +304,22 @@
                 scoreOutput.textContent = scoreSlider.value;
             });
             app.appendChild(scoringSection);
+        }
+
+        function playAlarmSound() {
+            const context = new (window.AudioContext || window.webkitAudioContext)();
+            const oscillator = context.createOscillator();
+            const gainNode = context.createGain();
+
+            oscillator.connect(gainNode);
+            gainNode.connect(context.destination);
+
+            gainNode.gain.value = 0.5;
+            oscillator.frequency.value = 440;
+            oscillator.type = "sine";
+
+            oscillator.start(context.currentTime);
+            oscillator.stop(context.currentTime + 0.5);
         }
 
         const timers = parseTimersFromUrl();
