@@ -82,24 +82,39 @@
         cards.classList.add("cards");
         app.appendChild(cards);
 
+        function setTitle(title) {
+            document.title = title;
+            const titleElement = document.createElement("h1");
+            titleElement.textContent = title;
+            titleElement.style.marginBottom = "20px";
+            app.appendChild(titleElement);
+        }
+
+
         function parseTimersFromUrl() {
             const searchParams = new URLSearchParams(window.location.search);
-            const timersData = [];
+            const timersData = {
+                timers: [],
+                title: "Timer"
+            };
 
             if (searchParams.has("timers")) {
                 try {
                     const decodedJson = decodeURIComponent(searchParams.get("timers"));
                     const parsedData = JSON.parse(decodedJson);
-                    if (Array.isArray(parsedData)) {
-                        parsedData.forEach((timer) => {
+                    if (parsedData.hasOwnProperty("timers") && Array.isArray(parsedData.timers)) {
+                        parsedData.timers.forEach((timer) => {
                             if (timer.hasOwnProperty("description")) {
                                 const newTimer = { description: timer.description };
                                 if (timer.hasOwnProperty("duration")) {
                                     newTimer.duration = parseInt(timer.duration, 10);
                                 }
-                                timersData.push(newTimer);
+                                timersData.timers.push(newTimer);
                             }
                         });
+                    }
+                    if (parsedData.hasOwnProperty("title")) {
+                        timersData.title = parsedData.title;
                     }
                 } catch (error) {
                     console.error("Error parsing timers from URL:", error);
@@ -109,12 +124,14 @@
             return timersData;
         }
 
+
         function updateUrlWithTimers(timers) {
-            const encodedJson = encodeURIComponent(JSON.stringify(timers));
+            const encodedJson = encodeURIComponent(JSON.stringify({ timers }));
             const newUrl = new URL(window.location.href);
             newUrl.searchParams.set("timers", encodedJson);
             history.replaceState(null, "", newUrl.toString());
         }
+
 
         function createCard(timer) {
             const card = document.createElement("div");
@@ -242,7 +259,8 @@
 
         const timers = parseTimersFromUrl();
 
-        timers.forEach(createCard);
+        setTitle(timers.title);
+        timers.timers.forEach(createCard);
         createAddButton();
         createScoringSection()
 
