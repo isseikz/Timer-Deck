@@ -7,9 +7,10 @@
     <title>Timer Application</title>
     <!-- Materialize CSS -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
-
     <!-- Materialize JavaScript -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+    <!-- Material Icons -->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 
     <style>
         body {
@@ -83,7 +84,7 @@
 
             return timersData;
         }
-        
+
         function updateUrlWithTimers(timers) {
             const encodedJson = encodeURIComponent(JSON.stringify(timers));
             const newUrl = new URL(window.location.href);
@@ -91,9 +92,7 @@
             history.replaceState(null, "", newUrl.toString());
         }
 
-        const timers = parseTimersFromUrl();
-
-        timers.forEach((timer) => {
+        function createCard(timer) {
             const card = document.createElement("div");
             card.classList.add("card", "z-depth-2");
 
@@ -101,7 +100,7 @@
             description.classList.add("description", "card-title");
             description.textContent = timer.description;
             card.appendChild(description);
-            
+
             let countdown;
 
             if (timer.hasOwnProperty("duration")) {
@@ -138,7 +137,7 @@
 
                 card.appendChild(startStopButton);
             }
-            
+
             const editButton = document.createElement("button");
             editButton.textContent = "Edit";
             editButton.classList.add("btn", "waves-effect", "waves-light", "edit-button");
@@ -162,32 +161,56 @@
             card.appendChild(editButton);
 
             app.appendChild(card);
-        });
+        }
 
-        const scoringSection = document.createElement("div");
-        scoringSection.classList.add("scoring");
+        function createAddButton() {
+            const addButton = document.createElement("button");
+            addButton.classList.add("btn", "waves-effect", "waves-light", "add-button");
+            addButton.innerHTML = '<i class="material-icons">add</i>';
+            addButton.addEventListener("click", () => {
+                const newTimer = {
+                    description: "New Timer",
+                    duration: 60
+                };
+                timers.push(newTimer);
+                createCard(newTimer);
+                updateUrlWithTimers(timers);
+            });
+            app.appendChild(addButton);
+        }
 
-        const scoreLabel = document.createElement("label");
-        scoreLabel.textContent = "Score the list:";
-        scoringSection.appendChild(scoreLabel);
+        function createScoringSection() {
+            const scoringSection = document.createElement("div");
+            scoringSection.classList.add("scoring");
 
-        const scoreSlider = document.createElement("input");
-        scoreSlider.type = "range";
-        scoreSlider.min = "0";
-        scoreSlider.max = "10";
-        scoreSlider.step = "1";
-        scoreSlider.classList.add("slider");
-        scoringSection.appendChild(scoreSlider);
+            const scoreLabel = document.createElement("label");
+            scoreLabel.textContent = "Score the list:";
+            scoringSection.appendChild(scoreLabel);
 
-        const scoreOutput = document.createElement("output");
-        scoreOutput.textContent = scoreSlider.value;
-        scoringSection.appendChild(scoreOutput);
+            const scoreSlider = document.createElement("input");
+            scoreSlider.type = "range";
+            scoreSlider.min = "0";
+            scoreSlider.max = "10";
+            scoreSlider.step = "1";
+            scoreSlider.classList.add("slider");
+            scoringSection.appendChild(scoreSlider);
 
-        app.appendChild(scoringSection);
-
-        scoreSlider.addEventListener("input", () => {
+            const scoreOutput = document.createElement("output");
             scoreOutput.textContent = scoreSlider.value;
-        });
+            scoringSection.appendChild(scoreOutput);
+
+            app.appendChild(scoringSection);
+
+            scoreSlider.addEventListener("input", () => {
+                scoreOutput.textContent = scoreSlider.value;
+            });
+        }
+
+        const timers = parseTimersFromUrl();
+
+        timers.forEach(createCard);
+        createAddButton();
+        createScoringSection()
 
         function formatTime(seconds) {
             const minutes = Math.floor(seconds / 60);
