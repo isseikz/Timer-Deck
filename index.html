@@ -82,12 +82,40 @@
         app.appendChild(cards);
 
         function setTitle(title) {
+            const titleContainer = document.createElement("div");
+            titleContainer.style.display = "flex";
+            titleContainer.style.alignItems = "center";
+            titleContainer.style.justifyContent = "center";
+            titleContainer.style.marginBottom = "20px";
+            app.appendChild(titleContainer);
+
             document.title = title;
             const titleElement = document.createElement("h1");
             titleElement.textContent = title;
-            titleElement.style.marginBottom = "20px";
-            app.appendChild(titleElement);
+            titleElement.style.marginRight = "10px";
+            titleContainer.appendChild(titleElement);
+
+            const editTitleButton = document.createElement("button");
+            editTitleButton.classList.add("btn", "waves-effect", "waves-light");
+            titleContainer.appendChild(editTitleButton);
+
+            const editTitleIcon = document.createElement("i");
+            editTitleIcon.classList.add("material-icons");
+            editTitleIcon.textContent = "edit";
+            editTitleButton.appendChild(editTitleIcon);
+
+            editTitleButton.addEventListener("click", () => {
+                const newTitle = prompt("Edit title:", title);
+                if (newTitle !== null && newTitle.trim() !== "") {
+                    title = newTitle;
+                    document.title = title;
+                    titleElement.textContent = title;
+                    timers.title = title;
+                    updateUrlWithTimers(timers);
+                }
+            });
         }
+
 
 
         function parseTimersFromUrl() {
@@ -179,8 +207,13 @@
             }
 
             const editButton = document.createElement("button");
-            editButton.textContent = "Edit";
             editButton.classList.add("btn", "waves-effect", "waves-light", "edit-button");
+            card.appendChild(editButton);
+
+            const editButtonIcon = document.createElement("i");
+            editButtonIcon.classList.add("material-icons");
+            editButtonIcon.textContent = "edit";
+            editButton.appendChild(editButtonIcon);
             editButton.addEventListener("click", () => {
                 const newDescription = prompt("Edit timer description:", timer.description);
                 if (newDescription !== null && newDescription.trim() !== "") {
