@@ -25,7 +25,22 @@
         }
 
         .container {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            min-height: 100vh;
             max-width: 600px;
+            padding: 20px;
+        }
+
+        .cards {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            align-items: center;
+            width: 100%;
+            overflow-y: auto;
         }
 
         .card {
@@ -57,6 +72,9 @@
         const app = document.getElementById("app");
         app.classList.add("container");
         document.body.appendChild(app);
+        const cards = document.createElement("div");
+        cards.classList.add("cards");
+        app.appendChild(cards);
 
         function parseTimersFromUrl() {
             const searchParams = new URLSearchParams(window.location.search);
@@ -171,7 +189,7 @@
             });
             card.appendChild(deleteButton);
 
-            app.appendChild(card);
+            cards.appendChild(card);
         }
 
         function createAddButton() {
@@ -210,11 +228,10 @@
             scoreOutput.textContent = scoreSlider.value;
             scoringSection.appendChild(scoreOutput);
 
-            app.appendChild(scoringSection);
-
             scoreSlider.addEventListener("input", () => {
                 scoreOutput.textContent = scoreSlider.value;
             });
+            app.appendChild(scoringSection);
         }
 
         const timers = parseTimersFromUrl();
