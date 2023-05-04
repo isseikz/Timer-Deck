@@ -51,6 +51,12 @@
             box-shadow: 0 2px 2px rgba(0, 0, 0, 0.14), 0 3px 1px rgba(0, 0, 0, 0.12), 0 1px 5px rgba(0, 0, 0, 0.2);
         }
 
+        .edit-button,
+        .delete-button {
+            margin-left: 5px;
+            margin-right: 5px;
+        }
+
         .description {
             font-weight: 500;
             margin-bottom: 5px;
@@ -181,9 +187,9 @@
             const deleteButton = document.createElement("button");
             deleteButton.textContent = "Delete";
             deleteButton.classList.add("btn", "waves-effect", "waves-light", "delete-button");
-            deleteButton.innerHTML = '<i class="material-icons">clear</i>';
+            deleteButton.innerHTML = '<i class="material-icons">delete</i>';
             deleteButton.addEventListener("click", () => {
-                app.removeChild(card);
+                card.removeChild(card);
                 timers.splice(timers.indexOf(timer), 1);
                 updateUrlWithTimers(timers);
             });
