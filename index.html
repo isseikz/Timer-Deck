@@ -189,7 +189,7 @@
             deleteButton.classList.add("btn", "waves-effect", "waves-light", "delete-button");
             deleteButton.innerHTML = '<i class="material-icons">delete</i>';
             deleteButton.addEventListener("click", () => {
-                card.removeChild(card);
+                cards.removeChild(card);
                 timers.splice(timers.indexOf(timer), 1);
                 updateUrlWithTimers(timers);
             });
