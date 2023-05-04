@@ -160,6 +160,17 @@
             });
             card.appendChild(editButton);
 
+            const deleteButton = document.createElement("button");
+            deleteButton.textContent = "Delete";
+            deleteButton.classList.add("btn", "waves-effect", "waves-light", "delete-button");
+            deleteButton.innerHTML = '<i class="material-icons">clear</i>';
+            deleteButton.addEventListener("click", () => {
+                app.removeChild(card);
+                timers.splice(timers.indexOf(timer), 1);
+                updateUrlWithTimers(timers);
+            });
+            card.appendChild(deleteButton);
+
             app.appendChild(card);
         }
 
