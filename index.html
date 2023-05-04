@@ -34,7 +34,6 @@
         }
 
         .cards {
-            flex-grow: 1;
             display: flex;
             flex-direction: column;
             justify-content: flex-start;
@@ -126,7 +125,7 @@
 
 
         function updateUrlWithTimers(timers) {
-            const encodedJson = encodeURIComponent(JSON.stringify({ timers }));
+            const encodedJson = encodeURIComponent(JSON.stringify(timers));
             const newUrl = new URL(window.location.href);
             newUrl.searchParams.set("timers", encodedJson);
             history.replaceState(null, "", newUrl.toString());
@@ -201,18 +200,14 @@
             });
             card.appendChild(editButton);
 
-            const deleteButton = document.createElement("button");
-            deleteButton.textContent = "Delete";
-            deleteButton.classList.add("btn", "waves-effect", "waves-light", "delete-button");
-            deleteButton.innerHTML = '<i class="material-icons">delete</i>';
-            deleteButton.addEventListener("click", () => {
-                cards.removeChild(card);
-                timers.splice(timers.indexOf(timer), 1);
-                updateUrlWithTimers(timers);
-            });
-            card.appendChild(deleteButton);
+            createDeleteButton(card, timer);
 
             cards.appendChild(card);
+        }
+
+        function setCards(timers) {
+            timers.forEach(createCard);
+            app.appendChild(cards);
         }
 
         function createAddButton() {
@@ -224,11 +219,24 @@
                     description: "New Timer",
                     duration: 60
                 };
-                timers.push(newTimer);
+                timers.timers.push(newTimer);
                 createCard(newTimer);
                 updateUrlWithTimers(timers);
             });
             app.appendChild(addButton);
+        }
+
+        function createDeleteButton(card, timer) {
+            const deleteButton = document.createElement("button");
+            deleteButton.textContent = "Delete";
+            deleteButton.classList.add("btn", "waves-effect", "waves-light", "delete-button");
+            deleteButton.innerHTML = '<i class="material-icons">delete</i>';
+            deleteButton.addEventListener("click", () => {
+                cards.removeChild(card);
+                timers.timers.splice(timers.timers.indexOf(timer), 1);
+                updateUrlWithTimers(timers);
+            });
+            card.appendChild(deleteButton);
         }
 
         function createScoringSection() {
@@ -260,7 +268,7 @@
         const timers = parseTimersFromUrl();
 
         setTitle(timers.title);
-        timers.timers.forEach(createCard);
+        setCards(timers.timers);
         createAddButton();
         createScoringSection()
 
