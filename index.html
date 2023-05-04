@@ -11,15 +11,18 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
     <!-- Material Icons -->
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <!-- Progress bar -->
+    <script src="js/progressbar.min.js"></script>
 
     <style>
         body {
-            font-family: Roboto, Arial, sans-serif;
+            font-family: 'Roboto', sans-serif;
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
             min-height: 100vh;
+            min-width: 350px;
             margin: 0;
             background-color: #f5f5f5;
         }
@@ -40,14 +43,31 @@
             align-items: center;
             width: 100%;
             overflow-y: auto;
+            margin-bottom: 20px;
         }
 
         .card {
+            width: 100%;
             border: none;
             border-radius: 4px;
             padding: 20px;
             margin-bottom: 10px;
             box-shadow: 0 2px 2px rgba(0, 0, 0, 0.14), 0 3px 1px rgba(0, 0, 0, 0.12), 0 1px 5px rgba(0, 0, 0, 0.2);
+            background-color: #fff;
+        }
+
+        .countdown {
+            font-family: 'Roboto Mono', monospace;
+            font-size: 1.5rem;
+            font-weight: 500;
+            color: #424242;
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+            height: 100px;
+            margin: 0 auto;
         }
 
         .edit-button,
@@ -57,13 +77,33 @@
         }
 
         .description {
-            font-weight: 500;
+            font-weight: 400;
+            font-size: 1.3rem;
             margin-bottom: 5px;
+            color: #424242;
         }
 
         .summary {
             margin-top: 20px;
             text-align: center;
+        }
+
+        h1 {
+            font-size: 2rem;
+            font-weight: 400;
+            color: #424242;
+        }
+
+        .btn {
+            background-color: #26a69a;
+        }
+
+        .btn:hover {
+            background-color: #2bbbad;
+        }
+
+        .slider {
+            width: 100%;
         }
     </style>
 </head>
@@ -173,8 +213,11 @@
 
             if (timer.hasOwnProperty("duration")) {
                 countdown = document.createElement("div");
-                countdown.classList.add("card-content");
-                countdown.textContent = formatTime(timer.duration);
+                countdown.classList.add("countdown");
+
+                const progressBarContainer = document.createElement("div");
+                countdown.appendChild(progressBarContainer);
+
                 card.appendChild(countdown);
 
                 const startStopButton = document.createElement("button");
@@ -183,6 +226,22 @@
                 let intervalId = null;
                 let alarmIntervalId = null;
                 let timerRunning = false;
+
+                let progressBar = null;
+
+                if (!progressBar) {
+                    progressBar = new ProgressBar.Line(progressBarContainer, {
+                        strokeWidth: 6,
+                        easing: "easeInOut",
+                        color: "#3F51B5",
+                        trailColor: "#eee",
+                        trailWidth: 1,
+                        svgStyle: { width: "100%", height: "100%" },
+                        text: { style: { fontFamily: "Roboto Mono, monospace", fontSize: "2rem", fontWeight: "bold", color: "#424242" } },
+                    });
+                    progressBar.setText(formatTime(timer.duration));
+                    progressBar.set(1);
+                }
 
                 startStopButton.addEventListener("click", () => {
                     if (timerRunning) {
@@ -198,15 +257,17 @@
                     } else {
                         intervalId = setInterval(() => {
                             timer.duration--;
-                            countdown.textContent = formatTime(timer.duration);
+                            progressBar.setText(formatTime(timer.duration));
+                            progressBar.animate(timer.duration / originalDuration);
 
                             if (timer.duration <= 0) {
                                 clearInterval(intervalId);
-                                countdown.textContent = "Time's up!";
+                                progressBar.setText("Time's up!");
                                 alarmIntervalId = setInterval(playAlarmSound, 1000);
                             }
                         }, 1000);
                         startStopButton.textContent = "Stop";
+                        const originalDuration = timer.duration;
                     }
                     timerRunning = !timerRunning;
                 });
